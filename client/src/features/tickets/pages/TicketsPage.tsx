@@ -1,3 +1,4 @@
+import { Link,NavLink } from "react-router-dom";
 const tickets = [
   {
     id: "OPS-4915",
@@ -58,19 +59,37 @@ const TicketsPage = () => {
           </div>
 
           <nav className="flex-1 space-y-2 px-4 py-6">
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
-              Overview
-            </button>
-            <button className="w-full rounded-xl bg-violet-50 px-4 py-3 text-left text-sm font-semibold text-violet-700">
-              Automation
-            </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
+                    isActive
+                    ? "bg-violet-50 font-semibold text-violet-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`
+                }
+             >
+                Overview
+            </NavLink>
+            <NavLink
+                to="/tickets"
+                className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
+                    isActive
+                    ? "bg-violet-50 font-semibold text-violet-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`
+                }
+             >
+                Tickets
+            </NavLink>
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Inventory
             </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Reports
             </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Settings
             </button>
           </nav>
@@ -92,9 +111,11 @@ const TicketsPage = () => {
               </p>
             </div>
 
-            <button className="rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700">
+            <Link 
+            to="/tickets/create"
+            className="rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700">
               + Create Ticket
-            </button>
+            </Link>
           </header>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

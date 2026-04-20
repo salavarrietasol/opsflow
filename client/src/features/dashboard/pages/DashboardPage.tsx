@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const metrics = [
   { title: "Active Workflows", value: "1,284", change: "+12.5%" },
   { title: "Throughput", value: "94.2k", change: "stable" },
@@ -16,19 +18,37 @@ const DashboardPage = () => {
           </div>
 
           <nav className="flex-1 space-y-2 px-4 py-6">
-            <button className="w-full rounded-xl bg-violet-50 px-4 py-3 text-left text-sm font-semibold text-violet-700">
-              Overview
-            </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
-              Automation
-            </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
+                    isActive
+                    ? "bg-violet-50 font-semibold text-violet-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`
+                }
+             >
+                Overview
+            </NavLink>
+            <NavLink
+                to="/tickets"
+                className={({ isActive }) =>
+                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
+                    isActive
+                    ? "bg-violet-50 font-semibold text-violet-700"
+                    : "text-slate-600 hover:bg-slate-50"
+                }`
+                }
+             >
+                Tickets
+            </NavLink>
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Inventory
             </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Reports
             </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
+            <button className="block w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
               Settings
             </button>
           </nav>
