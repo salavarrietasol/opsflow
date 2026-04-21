@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
+import { ticketDetail } from "../../../mocks/tickets";
 
 const TicketDetailPage = () => {
+    const { comments, activity } = ticketDetail;
   return (
     <MainLayout>
       <header className="mb-8 flex items-start justify-between gap-4">
@@ -14,7 +16,7 @@ const TicketDetailPage = () => {
             </Link>
           <p className="text-sm text-slate-500">Ticket Details</p>
           <h1 className="text-3xl font-bold text-slate-900">
-            OPS-4915 · Database Migration for APAC Region
+            {ticketDetail.id} · {ticketDetail.title}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
             Review current ticket information, ownership, and discussion history.
@@ -23,10 +25,10 @@ const TicketDetailPage = () => {
 
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
-            IN PROGRESS
+           {ticketDetail.status}
           </span>
           <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-            Urgent
+            {ticketDetail.priority}
           </span>
         </div>
       </header>
@@ -36,9 +38,7 @@ const TicketDetailPage = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-slate-900">Overview</h2>
             <p className="mt-4 text-sm leading-7 text-slate-600">
-              This ticket covers the database migration workflow for the APAC region.
-              The operation includes schema alignment, replication validation, and
-              service continuity checks before the final cutover window.
+              {ticketDetail.description}
             </p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -46,70 +46,50 @@ const TicketDetailPage = () => {
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Assignee
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-800">Sarah Chen</p>
+                <p className="mt-1 text-sm font-medium text-slate-800">{ticketDetail.assignee}</p>
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Reporter
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-800">Marcus K.</p>
+                <p className="mt-1 text-sm font-medium text-slate-800">{ticketDetail.reporter}</p>
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Created
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-800">Oct 12, 2023</p>
+                <p className="mt-1 text-sm font-medium text-slate-800">{ticketDetail.created}</p>
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Due Date
                 </p>
-                <p className="mt-1 text-sm font-medium text-slate-800">Oct 18, 2023</p>
+                <p className="mt-1 text-sm font-medium text-slate-800">{ticketDetail.dueDate}</p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">Comments</h2>
               <span className="text-sm text-slate-400">3 updates</span>
             </div>
+        </div>
 
-            <div className="space-y-4">
-              <div className="rounded-xl bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-800">Sarah Chen</p>
-                  <p className="text-xs text-slate-400">2h ago</p>
+        <div className="space-y-4">
+            {comments.map((comment, index) => (
+                <div key={index} className="rounded-xl bg-slate-50 p-4">
+                    <div className="flex items-center justify-between">
+                        <p className="text-sm font-semibold text-slate-800">{comment.author}</p>
+                        <p className="text-xs text-slate-400">{comment.time}</p>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-600">{comment.content}</p>
                 </div>
-                <p className="mt-2 text-sm text-slate-600">
-                  Initial migration checks completed. Waiting on final replication report.
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-800">Alex Rivera</p>
-                  <p className="text-xs text-slate-400">5h ago</p>
-                </div>
-                <p className="mt-2 text-sm text-slate-600">
-                  Monitoring latency during sync. No major anomalies so far.
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-slate-800">Marcus K.</p>
-                  <p className="text-xs text-slate-400">1d ago</p>
-                </div>
-                <p className="mt-2 text-sm text-slate-600">
-                  Ticket created to track regional migration and release coordination.
-                </p>
-              </div>
-            </div>
-          </div>
+                ))}
+        </div>
         </section>
 
         <aside className="space-y-6">
@@ -130,20 +110,12 @@ const TicketDetailPage = () => {
             <h2 className="text-lg font-semibold text-slate-900">Activity</h2>
 
             <div className="mt-4 space-y-4">
-              <div>
-                <p className="text-sm font-medium text-slate-800">Status changed to In Progress</p>
-                <p className="text-xs text-slate-400">Today · 09:24 AM</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-slate-800">Assignee updated to Sarah Chen</p>
-                <p className="text-xs text-slate-400">Today · 08:10 AM</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-slate-800">Ticket created</p>
-                <p className="text-xs text-slate-400">Yesterday · 05:42 PM</p>
-              </div>
+              {activity.map((item, index) => (
+                <div key={index}>
+                    <p className="text-sm font-medium text-slate-800">{item.title}</p>
+                    <p className="text-xs text-slate-400">{item.time}</p>
+                </div>
+                ))}
             </div>
           </div>
         </aside>

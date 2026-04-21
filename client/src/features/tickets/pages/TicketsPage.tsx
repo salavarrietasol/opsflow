@@ -1,40 +1,7 @@
 import { Link } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
+import { tickets } from "../../../mocks/tickets";
 
-const tickets = [
-  {
-    id: "OPS-4915",
-    title: "Database Migration for APAC Region",
-    status: "IN PROGRESS",
-    priority: "Urgent",
-    assignee: "Sarah Chen",
-    created: "Oct 12, 2023",
-  },
-  {
-    id: "OPS-4819",
-    title: "Security Patch v4.2 Deployment",
-    status: "OPEN",
-    priority: "High",
-    assignee: "Marcus K.",
-    created: "Oct 11, 2023",
-  },
-  {
-    id: "OPS-4792",
-    title: "Webhook Latency Investigation",
-    status: "RESOLVED",
-    priority: "Medium",
-    assignee: "Alex Rivera",
-    created: "Oct 09, 2023",
-  },
-  {
-    id: "OPS-4788",
-    title: "UI Refresh Dashboard Widgets",
-    status: "CLOSED",
-    priority: "Low",
-    assignee: "Lila Thorne",
-    created: "Oct 05, 2023",
-  },
-];
 
 const statusClasses: Record<string, string> = {
   "IN PROGRESS": "bg-orange-100 text-orange-700",
