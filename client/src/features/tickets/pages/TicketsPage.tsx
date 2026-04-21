@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
+
 const tickets = [
   {
     id: "OPS-4915",
@@ -106,9 +107,11 @@ const TicketsPage = () => {
                       </td>
                       <td className="px-4 py-4">
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">
-                            {ticket.title}
-                          </p>
+                          <td className="rounded-l-xl px-4 py-4 text-sm font-semibold text-violet-600">
+                            <Link to= {`/tickets/${ticket.id}`} className="hover:underline">
+                              {ticket.title}
+                            </Link>
+                          </td>
                           <p className="text-xs text-slate-400">
                             Operational task in workflow queue
                           </p>
