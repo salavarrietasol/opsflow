@@ -4,7 +4,6 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import TicketsPage from "../features/tickets/pages/TicketsPage";
 import CreateTicketPage from "../features/tickets/pages/CreateTicketPage";
 import TicketDetailPage from "../features/tickets/pages/TicketDetailPage";
-import path from "path";
 
 export const router = createBrowserRouter([
   {
