@@ -1,13 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import AppSideBar from "../../../components/layout/AppSidebar";
+import MainLayout from "../../../components/layout/MainLayout";
 const CreateTicketPage = () => {
     const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-slate-100">
-      <div className="flex">
-        <AppSideBar/>
-
-        <main className="flex-1 p-6 lg:p-8">
+    <MainLayout>
           <header className="mb-8">
             <div className="mb-3 flex items-center gap-2 text-sm text-slate-400">
                 <Link to="/tickets" className="hover:text-violet-600">
@@ -101,9 +97,7 @@ const CreateTicketPage = () => {
               </div>
             </form>
           </section>
-        </main>
-      </div>
-    </div>
+    </MainLayout>
   );
 };
 

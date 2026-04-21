@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AppSideBar from "../../../components/layout/AppSidebar";
+import MainLayout from "../../../components/layout/MainLayout";
 const tickets = [
   {
     id: "OPS-4915",
@@ -51,11 +51,7 @@ const priorityClasses: Record<string, string> = {
 
 const TicketsPage = () => {
   return (
-    <div className="min-h-screen bg-slate-100">
-      <div className="flex">
-        <AppSideBar />
-
-        <main className="flex-1 p-6 lg:p-8">
+    <MainLayout>
           <header className="mb-8 flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-500">Tickets</p>
@@ -157,9 +153,7 @@ const TicketsPage = () => {
               </div>
             </div>
           </section>
-        </main>
-      </div>
-    </div>
+    </MainLayout>
   );
 };
 

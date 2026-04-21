@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import AppSidebar from "../../../components/layout/AppSidebar";
+import MainLayout from "../../../components/layout/MainLayout";
 
 const metrics = [
   { title: "Active Workflows", value: "1,284", change: "+12.5%" },
@@ -10,11 +10,7 @@ const metrics = [
 
 const DashboardPage = () => {
   return (
-    <div className="min-h-screen bg-slate-100">
-      <div className="flex">
-        <AppSidebar />
-
-        <main className="flex-1 p-6 lg:p-8">
+    <MainLayout>
           <header className="mb-8 flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-500">Dashboard</p>
@@ -99,9 +95,7 @@ const DashboardPage = () => {
               </div>
             </div>
           </section>
-        </main>
-      </div>
-    </div>
+    </MainLayout>
   );
 };
 
