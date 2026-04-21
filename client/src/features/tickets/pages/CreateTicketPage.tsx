@@ -1,48 +1,11 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AppSideBar from "../../../components/layout/AppSidebar";
 const CreateTicketPage = () => {
     const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="flex">
-        <aside className="hidden w-64 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-          <div className="border-b border-slate-200 px-6 py-5">
-            <h2 className="text-xl font-bold text-slate-900">OpsFlow</h2>
-            <p className="text-sm text-slate-400">Operations platform</p>
-          </div>
-
-          <nav className="flex-1 space-y-2 px-4 py-6">
-            <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
-                    isActive
-                    ? "bg-violet-50 font-semibold text-violet-700"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`
-                }
-             >
-                Overview
-            </NavLink>
-            <NavLink
-                to="/tickets"
-                className={({ isActive }) =>
-                `block w-full rounded-xl px-4 py-3 text-left text-sm transition ${
-                    isActive
-                    ? "bg-violet-50 font-semibold text-violet-700"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`
-                }
-             >
-                Tickets
-            </NavLink>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
-              Reports
-            </button>
-            <button className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-600 hover:bg-slate-50">
-              Settings
-            </button>
-          </nav>
-        </aside>
+        <AppSideBar/>
 
         <main className="flex-1 p-6 lg:p-8">
           <header className="mb-8">
