@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const metrics = [
   { title: "Active Workflows", value: "1,284", change: "+12.5%" },
@@ -70,8 +70,20 @@ const DashboardPage = () => {
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Last 30 days
+              <div className="flex items-center gap-3">
+              <Link
+                to="/tickets"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50"
+                >
+                View Tickets
+              </Link>
+
+              <Link
+                to="/tickets/create"
+                className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+                >
+                Create Ticket
+              </Link>
             </div>
           </header>
 

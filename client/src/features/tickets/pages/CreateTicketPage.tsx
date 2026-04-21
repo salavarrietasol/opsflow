@@ -1,5 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 const CreateTicketPage = () => {
+    const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-slate-100">
       <div className="flex">
@@ -45,7 +46,13 @@ const CreateTicketPage = () => {
 
         <main className="flex-1 p-6 lg:p-8">
           <header className="mb-8">
-            <p className="text-sm text-slate-500">Tickets</p>
+            <div className="mb-3 flex items-center gap-2 text-sm text-slate-400">
+                <Link to="/tickets" className="hover:text-violet-600">
+                    Tickets
+                </Link>
+                <span>/</span>
+                <span className="text-slate-500">Create Ticket</span>
+            </div>
             <h1 className="text-3xl font-bold text-slate-900">Create Ticket</h1>
             <p className="mt-1 text-sm text-slate-500">
               Submit a new operational request and assign ownership.
@@ -117,13 +124,14 @@ const CreateTicketPage = () => {
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button
                   type="button"
-                  className="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                  onClick={() => navigate("/tickets")}
+                  className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700"
+                  className="cursor-pointer rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-violet-700"
                 >
                   Create Ticket
                 </button>
