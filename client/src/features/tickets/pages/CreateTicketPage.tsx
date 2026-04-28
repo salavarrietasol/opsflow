@@ -8,6 +8,7 @@ const CreateTicketPage = () => {
     const [priority, setPriority] = useState("");
     const [assignee, setAssignee] = useState("");
     const [created, setCreated] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({
@@ -61,18 +62,23 @@ const CreateTicketPage = () => {
 
       setErrors(newErrors);
 
+      setLoading(true);
+
       try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
         await createTicket({
-          title, 
+          title,
           description,
           priority,
           assignee,
           created,
         });
 
-        navigate ("/tickets");
+        navigate("/tickets");
       } catch (error) {
         console.error("Error creating ticket", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -102,6 +108,9 @@ const CreateTicketPage = () => {
                   type="text"
                   placeholder="Enter a clear and concise title"
                   value={title}
+                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
+                    errors.title ? "border-red-500" : "border-slate-200"
+                  }`}
                   onChange={(e) => {
                     const value = e.target.value;
                     setTitle(value);
@@ -110,7 +119,6 @@ const CreateTicketPage = () => {
                       setErrors(prev => ({ ...prev, title: "" }));
                     }
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
                 {errors.title && (
                   <p className="mt-1 text-sm text-red-600">
@@ -127,6 +135,9 @@ const CreateTicketPage = () => {
                   rows={6}
                   placeholder="Describe the issue, request, or workflow need..."
                   value={description}
+                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
+                    errors.description ? "border-red-500" : "border-slate-200"
+                  }`}
                   onChange={(e) => {
                     const value = e.target.value;
                     setDescription(value);
@@ -135,7 +146,6 @@ const CreateTicketPage = () => {
                       setErrors(prev => ({ ...prev, description: "" }));
                     }
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
                 {errors.description && (
                   <p className="mt-1 text-sm text-red-600">
@@ -151,6 +161,9 @@ const CreateTicketPage = () => {
                   </label>
                   <select 
                     value = {priority}
+                    className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 ${
+                      errors.priority ? "border-red-500" : "border-slate-200"
+                    }`}
                     onChange={(e) => {
                     const value = e.target.value;
                     setPriority(value);
@@ -159,7 +172,6 @@ const CreateTicketPage = () => {
                       setErrors(prev => ({ ...prev, priority: "" }));
                     }
                   }}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500"
                     >
                     <option value="">Select priority</option>
                     <option>Urgent</option>
@@ -180,6 +192,9 @@ const CreateTicketPage = () => {
                   </label>
                   <select 
                     value={assignee}
+                    className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 ${
+                      errors.assignee ? "border-red-500" : "border-slate-200"
+                    }`}
                     onChange={(e) => {
                     const value = e.target.value;
                     setAssignee(value);
@@ -188,7 +203,7 @@ const CreateTicketPage = () => {
                       setErrors(prev => ({ ...prev, assignee: "" }));
                     }
                   }}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500">
+                    >
                     <option value="">Select assignee</option>
                     <option>Sarah Chen</option>
                     <option>Marcus K.</option>
@@ -210,6 +225,9 @@ const CreateTicketPage = () => {
                 <input
                   type="date"
                   value={created}
+                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
+                    errors.created ? "border-red-500" : "border-slate-200"
+                  }`}
                   onChange={(e) => {
                     const value = e.target.value;
                     setCreated(value);
@@ -218,7 +236,6 @@ const CreateTicketPage = () => {
                       setErrors(prev => ({ ...prev, created: "" }));
                     }
                   }}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
                 {errors.created && (
                   <p className="mt-1 text-sm text-red-600">
@@ -237,9 +254,14 @@ const CreateTicketPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="cursor-pointer rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-violet-700"
-                >
-                  Create Ticket
+                  disabled={loading}
+                  className={`rounded-xl px-5 py-3 text-sm font-semibold text-white shadow transition ${
+                    loading
+                      ? "bg-violet-300 cursor-not-allowed"
+                      : "bg-violet-600 hover:bg-violet-700 cursor-pointer"
+                  }`}
+                  >
+                  {loading ? "Creating..." : "Create Ticket"}
                 </button>
               </div>
             </form>
