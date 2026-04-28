@@ -10,8 +10,56 @@ const CreateTicketPage = () => {
     const [created, setCreated] = useState("");
     const navigate = useNavigate();
 
+    const [errors, setErrors] = useState({
+        title: "",
+        description: "",
+        priority: "",
+        assignee: "",
+        created: "",
+    });
+
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      const newErrors = {
+        title: "",
+        description: "",
+        priority: "",
+        assignee: "",
+        created: "",
+      };
+
+      if (!title.trim()) {
+        newErrors.title = "Title is required";
+      }
+
+      if (!description.trim()) {
+        newErrors.description = "Description is required";
+      }
+
+      if (!priority.trim()) {
+        newErrors.priority = "Please select a priority";
+      }
+
+      if (!assignee.trim()) {
+        newErrors.assignee = "Please select an assignee";
+      }
+
+      if (!created.trim()) {
+        newErrors.created = "Due date is required";
+      }
+
+      if (
+        newErrors.title ||
+        newErrors.description ||
+        newErrors.priority ||
+        newErrors.assignee ||
+        newErrors.created
+      ) {
+        setErrors(newErrors);
+        return;
+      }
+
+      setErrors(newErrors);
 
       try {
         await createTicket({
@@ -54,9 +102,21 @@ const CreateTicketPage = () => {
                   type="text"
                   placeholder="Enter a clear and concise title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setTitle(value);
+
+                    if (value.trim()) {
+                      setErrors(prev => ({ ...prev, title: "" }));
+                    }
+                  }}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.title}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -67,9 +127,21 @@ const CreateTicketPage = () => {
                   rows={6}
                   placeholder="Describe the issue, request, or workflow need..."
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setDescription(value);
+
+                    if (value.trim()) {
+                      setErrors(prev => ({ ...prev, description: "" }));
+                    }
+                  }}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
+                {errors.description && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
@@ -79,15 +151,27 @@ const CreateTicketPage = () => {
                   </label>
                   <select 
                     value = {priority}
-                    onChange={(e) => setPriority(e.target.value)}
+                    onChange={(e) => {
+                    const value = e.target.value;
+                    setPriority(value);
+
+                    if (value.trim()) {
+                      setErrors(prev => ({ ...prev, priority: "" }));
+                    }
+                  }}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500"
                     >
-                    <option>Select priority</option>
+                    <option value="">Select priority</option>
                     <option>Urgent</option>
                     <option>High</option>
                     <option>Medium</option>
                     <option>Low</option>
                   </select>
+                  {errors.priority && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.priority}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -96,14 +180,26 @@ const CreateTicketPage = () => {
                   </label>
                   <select 
                     value={assignee}
-                    onChange={(e) => setAssignee(e.target.value)}
+                    onChange={(e) => {
+                    const value = e.target.value;
+                    setAssignee(value);
+
+                    if (value.trim()) {
+                      setErrors(prev => ({ ...prev, assignee: "" }));
+                    }
+                  }}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500">
-                    <option>Select assignee</option>
+                    <option value="">Select assignee</option>
                     <option>Sarah Chen</option>
                     <option>Marcus K.</option>
                     <option>Alex Rivera</option>
                     <option>Lila Thorne</option>
                   </select>
+                  {errors.assignee && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.assignee}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -114,9 +210,21 @@ const CreateTicketPage = () => {
                 <input
                   type="date"
                   value={created}
-                  onChange={(e) => setCreated(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setCreated(value);
+
+                    if (value.trim()) {
+                      setErrors(prev => ({ ...prev, created: "" }));
+                    }
+                  }}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
+                {errors.created && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.created}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4">
