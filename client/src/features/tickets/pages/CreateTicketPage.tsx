@@ -1,7 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import MainLayout from "../../../components/layout/MainLayout";
+import { createTicket } from "../../../api/tickets";
 const CreateTicketPage = () => {
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [priority, setPriority] = useState("");
+    const [assignee, setAssignee] = useState("");
+    const [created, setCreated] = useState("");
     const navigate = useNavigate();
+
+    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      try {
+        await createTicket({
+          title, 
+          description,
+          priority,
+          assignee,
+          created,
+        });
+
+        navigate ("/tickets");
+      } catch (error) {
+        console.error("Error creating ticket", error);
+      }
+    };
+
   return (
     <MainLayout>
           <header className="mb-8">
@@ -19,7 +45,7 @@ const CreateTicketPage = () => {
           </header>
 
           <section className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
                   Ticket title
@@ -27,6 +53,8 @@ const CreateTicketPage = () => {
                 <input
                   type="text"
                   placeholder="Enter a clear and concise title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
               </div>
@@ -38,6 +66,8 @@ const CreateTicketPage = () => {
                 <textarea
                   rows={6}
                   placeholder="Describe the issue, request, or workflow need..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
               </div>
@@ -47,7 +77,11 @@ const CreateTicketPage = () => {
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Priority
                   </label>
-                  <select className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500">
+                  <select 
+                    value = {priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500"
+                    >
                     <option>Select priority</option>
                     <option>Urgent</option>
                     <option>High</option>
@@ -60,7 +94,10 @@ const CreateTicketPage = () => {
                   <label className="mb-2 block text-sm font-medium text-slate-700">
                     Assignee
                   </label>
-                  <select className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500">
+                  <select 
+                    value={assignee}
+                    onChange={(e) => setAssignee(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500">
                     <option>Select assignee</option>
                     <option>Sarah Chen</option>
                     <option>Marcus K.</option>
@@ -76,6 +113,8 @@ const CreateTicketPage = () => {
                 </label>
                 <input
                   type="date"
+                  value={created}
+                  onChange={(e) => setCreated(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500"
                 />
               </div>

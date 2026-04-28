@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
-import { tickets } from "../../../mocks/tickets";
-
+import { getTickets } from "../../../api/tickets";
 
 const statusClasses: Record<string, string> = {
   "IN PROGRESS": "bg-orange-100 text-orange-700",
@@ -16,8 +16,29 @@ const priorityClasses: Record<string, string> = {
   Medium: "text-amber-600",
   Low: "text-slate-500",
 };
-
+type Ticket = {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  created: string;
+};
 const TicketsPage = () => {
+    const [tickets, setTickets] = useState<Ticket[]>([]);
+
+    useEffect(() => {
+    const loadTickets = async () => {
+    try {
+      const data = await getTickets();
+      setTickets(data);
+    } catch (error) {
+      console.error("Error loading tickets:", error);
+    }
+  };
+
+  loadTickets();
+}, []);
   return (
     <MainLayout>
           <header className="mb-8 flex items-center justify-between">

@@ -1,3 +1,4 @@
+import axios from "axios";
 export const tickets = [
   {
     id: "OPS-4915",
@@ -77,4 +78,14 @@ export const ticketDetail = {
       time: "Yesterday · 05:42 PM",
     },
   ],
+};
+export const createTicket = async (ticketData: {
+  title: string;
+  description: string;
+  priority: string;
+  assignee: string;
+  created: string;
+}) => {
+  const response = await axios.post("http://localhost:3001/tickets", ticketData);
+  return response.data;
 };
