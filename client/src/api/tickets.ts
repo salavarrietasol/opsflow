@@ -1,4 +1,5 @@
 import axios from "axios";
+const API_URL = "http://localhost:3001/tickets";
 
 export const getTickets = async () => {
   const response = await axios.get("http://localhost:3001/tickets");
@@ -19,3 +20,12 @@ export const createTicket = async (ticketData: {
   return response.data;
 };
 
+export const deleteTicket = async (id: string) => {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete ticket");
+  }
+};

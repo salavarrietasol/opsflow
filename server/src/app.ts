@@ -54,4 +54,18 @@ app.post("/tickets", async (req, res) => {
   
 });
 
+app.delete("/tickets/:id", async (req, res) => {
+  const {id} =req.params;
+  try {
+    await prisma.ticket.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting ticket", error);
+    res.status(500).json({ message: "Error deleting ticket" });
+  }
+});
+
 export default app;
