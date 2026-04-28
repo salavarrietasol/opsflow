@@ -10,6 +10,7 @@ export const getTicketById = async (id:string) => {
 };
 export const createTicket = async (ticketData: {
   title: string;
+  description: string;
   priority: string;
   assignee: string;
   created: string;

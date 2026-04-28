@@ -1,67 +1,45 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { PrismaClient } from "./generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const tickets = [
-  {
-    id: "OPS-4915",
-    title: "Database Migration for APAC Region",
-    status: "IN PROGRESS",
-    priority: "Urgent",
-    assignee: "Sarah Chen",
-    created: "Oct 12, 2023",
-  },
-  {
-    id: "OPS-4819",
-    title: "Security Patch v4.2 Deployment",
-    status: "OPEN",
-    priority: "High",
-    assignee: "Marcus K.",
-    created: "Oct 11, 2023",
-  },
-  {
-    id: "OPS-4792",
-    title: "Webhook Latency Investigation",
-    status: "RESOLVED",
-    priority: "Medium",
-    assignee: "Alex Rivera",
-    created: "Oct 09, 2023",
-  },
-  {
-    id: "OPS-4788",
-    title: "UI Refresh Dashboard Widgets",
-    status: "CLOSED",
-    priority: "Low",
-    assignee: "Lila Thorne",
-    created: "Oct 05, 2023",
-  },
-];
-
 app.get("/", (_req, res) => {
   res.json({ message: "OpsFlow API is running" });
 });
 
-app.get("/tickets", (_req, res) => {
+app.get("/tickets", async (_req, res) => {
+  const tickets = await prisma.ticket.findMany();
   res.json(tickets);
 });
 
-app.get("/tickets/:id", (req, res) => {
+app.get("/tickets/:id", async (req, res) => {
   const { id } = req.params;
-  const ticket = tickets.find((ticket) => ticket.id === id);
+  const ticket = await prisma.ticket.findUnique({
+    where: { id },
+  });
+
   if (!ticket) {
     return res.status(404).json({ message: "Ticket not found" });
   }
   res.json(ticket);
 });
 
-app.post("/tickets", (req, res) => {
+app.post("/tickets", async (req, res) => {
   const { title, description, priority, assignee, created } = req.body;
-  const newTicket = {
+  const newTicket = await prisma.ticket.create ({
+    data: {
     id: `OPS-${Date.now()}`,
     title, 
     description,
@@ -69,12 +47,9 @@ app.post("/tickets", (req, res) => {
     priority,
     assignee,
     created
-  };
-  tickets.push(newTicket);
+  },
+});
 
-  console.log("Nuevo ticket creado:", newTicket);
-  console.log("Tickets actuales:", tickets);
-  
   res.status(201).json(newTicket);
   
 });

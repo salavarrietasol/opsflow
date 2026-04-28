@@ -6,6 +6,7 @@ import { getTicketById } from "../../../api/tickets";
 type Ticket = {
   id: string;
   title: string;
+  description: string;
   status: string;
   priority: string;
   assignee: string;
@@ -74,9 +75,7 @@ const TicketDetailPage = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-slate-900">Overview</h2>
             <p className="mt-4 text-sm leading-7 text-slate-600">
-              This ticket is currently being tracked through the OpsFlow platform.
-              The detailed description, comments, and activity timeline can be
-              extended when the backend grows.
+              {ticket.description}
             </p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">

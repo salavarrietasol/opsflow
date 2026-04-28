@@ -19,6 +19,7 @@ const priorityClasses: Record<string, string> = {
 type Ticket = {
   id: string;
   title: string;
+  description:string;
   status: string;
   priority: string;
   assignee: string;
@@ -101,7 +102,7 @@ const TicketsPage = () => {
                             </Link>
                           </td>
                           <p className="text-xs text-slate-400">
-                            Operational task in workflow queue
+                            {ticket.description}
                           </p>
                         </div>
                       </td>
