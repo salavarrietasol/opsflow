@@ -170,8 +170,11 @@ const TicketDetailPage = () => {
             <h2 className="text-lg font-semibold text-slate-900">Actions</h2>
 
             <div className="mt-4 space-y-3">
-              <button className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700">
-                Update Status
+              <button className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700"
+                type="button"
+                onClick={()=>navigate(`/tickets/${ticket.id}/edit`) }
+              >
+              Update Ticket
               </button>
               <button className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50">
                 Reassign Ticket

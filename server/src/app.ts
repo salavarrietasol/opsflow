@@ -54,6 +54,30 @@ app.post("/tickets", async (req, res) => {
   
 });
 
+app.put("/tickets/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, status, priority, assignee, created } = req.body;
+
+  try {
+    const updatedTicket = await prisma.ticket.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        assignee,
+        created,
+      },
+    });
+
+    res.json(updatedTicket);
+  } catch (error) {
+    console.error("Error updating ticket", error);
+    res.status(500).json({ message: "Error updating ticket" });
+  }
+});
+
 app.delete("/tickets/:id", async (req, res) => {
   const {id} =req.params;
   try {
