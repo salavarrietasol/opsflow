@@ -77,7 +77,7 @@ const HomePage = () => {
             </Link>
 
             <a
-              href="#"
+              href="https://github.com/salavarrietasol/opsflow.git"
               className="flex-1 rounded-xl border border-white/20 px-7 py-4 text-center text-sm font-bold text-white transition hover:bg-white/10"
             >
               View Code

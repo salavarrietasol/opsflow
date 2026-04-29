@@ -1,6 +1,6 @@
 import path from "path";
 import dotenv from "dotenv";
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 import cors from "cors";
 import { PrismaClient } from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -75,6 +75,13 @@ passport.use(
     }
   )
 );
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user: Express.User, done) => {
+  done(null, user);
+});
 
 app.get(
   "/auth/google",
@@ -85,11 +92,28 @@ app.get(
 
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: `${clientUrl}/login`,
-  }),
-  (_req, res) => {
-    res.redirect(`${clientUrl}/dashboard`);
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+      "google",
+      { session: false },
+      (
+        error: Error | null,
+        user: Express.User | false,
+        info: { message?: string } | undefined
+      ) => {
+        if (error) {
+          console.error("Google authentication error:", error);
+          return res.redirect(`${clientUrl}/login?auth=google_error`);
+        }
+
+        if (!user) {
+          console.warn("Google authentication failed:", info?.message);
+          return res.redirect(`${clientUrl}/login?auth=google_failed`);
+        }
+
+        return res.redirect(`${clientUrl}/dashboard`);
+      }
+    )(req, res, next);
   }
 );
 
