@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+
 const LoginPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#070817] px-4 py-8">
@@ -76,10 +78,13 @@ const LoginPage = () => {
 
         <button
           type="button"
-          className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          onClick={() => {
+            window.location.assign(`${API_BASE_URL}/auth/google`);
+          }}
+          className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-bold text-slate-700 shadow-lg shadow-violet-600/30 transition hover:scale-[1.01] hover:shadow-violet-600/50"
         >
           <span className="text-lg">G</span>
-          Google Account
+          Continue with Google
         </button>
 
         <p className="mt-7 text-center text-sm font-medium text-slate-400">

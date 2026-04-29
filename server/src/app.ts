@@ -1,8 +1,30 @@
-import "dotenv/config";
+import path from "path";
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "./generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import session from "express-session";
+import passport from "passport";
+import {
+  Strategy as GoogleStrategy,
+  Profile,
+  VerifyCallback,
+} from "passport-google-oauth20";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+const requiredEnv = [
+  "DATABASE_URL",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+] as const;
+
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+}
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -11,9 +33,65 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 const app = express();
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173/opsflow";
+const clientOrigin = new URL(clientUrl).origin;
+const googleCallbackUrl =
+  process.env.GOOGLE_CALLBACK_URL ||
+  "http://localhost:3001/auth/google/callback";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: clientOrigin,
+    credentials: true,
+  })
+);
 app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "opsflow_dev_secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: googleCallbackUrl,
+    },
+    async (
+      _accessToken: string,
+      _refreshToken: string,
+      profile: Profile,
+      done: VerifyCallback
+    ) => {
+      return done(null, profile);
+    }
+  )
+);
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${clientUrl}/login`,
+  }),
+  (_req, res) => {
+    res.redirect(`${clientUrl}/dashboard`);
+  }
+);
 
 app.get("/", (_req, res) => {
   res.json({ message: "OpsFlow API is running" });
