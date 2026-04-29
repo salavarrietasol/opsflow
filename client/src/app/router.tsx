@@ -4,10 +4,16 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import TicketsPage from "../features/tickets/pages/TicketsPage";
 import CreateTicketPage from "../features/tickets/pages/CreateTicketPage";
 import TicketDetailPage from "../features/tickets/pages/TicketDetailPage";
-import EditTicketPage from "../features/tickets/pages/EditTicketPage";
+import EditTicketPage from "../features/tickets/pages/TicketDetailPage"
+import HomePage from  "../features/auth/pages/HomePage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/login",
     element: <LoginPage />,
   },
   {
@@ -28,7 +34,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/tickets/:id/edit",
-    element: <EditTicketPage />,
+    element: < EditTicketPage />,
   },
 ], {
   basename: import.meta.env.BASE_URL,
