@@ -4,7 +4,7 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import TicketsPage from "../features/tickets/pages/TicketsPage";
 import CreateTicketPage from "../features/tickets/pages/CreateTicketPage";
 import TicketDetailPage from "../features/tickets/pages/TicketDetailPage";
-import EditTicketPage from "../features/tickets/pages/TicketDetailPage"
+import EditTicketPage from "../features/tickets/pages/EditTicketPage";
 import HomePage from  "../features/auth/pages/HomePage";
 
 export const router = createBrowserRouter([
@@ -29,12 +29,12 @@ export const router = createBrowserRouter([
     element: <CreateTicketPage />,
   },
   {
-    path: "/tickets/:id",
-    element: <TicketDetailPage />,
+    path: "/tickets/:id/edit",
+    element: <EditTicketPage />,
   },
   {
-    path: "/tickets/:id/edit",
-    element: < EditTicketPage />,
+    path: "/tickets/:id",
+    element: <TicketDetailPage />,
   },
 ], {
   basename: import.meta.env.BASE_URL,
