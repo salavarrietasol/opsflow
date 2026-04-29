@@ -23,7 +23,9 @@ export const router = createBrowserRouter([
     element: <CreateTicketPage />,
   },
   {
-  path: "/tickets/:id",
-  element: <TicketDetailPage />
+    path: "/tickets/:id",
+    element: <TicketDetailPage />,
   },
-]);
+], {
+  basename: import.meta.env.BASE_URL,
+});
