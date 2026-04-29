@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 const linkBaseClass = "block w-full rounded-xl px-4 py-3 text-left text-sm transition";
 
@@ -13,10 +13,16 @@ const getNavClass = ({ isActive }: { isActive: boolean }) =>
 const AppSidebar = () => {
   return (
     <aside className="hidden w-64 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-      <div className="border-b border-slate-200 px-6 py-5">
-            <h2 className="text-xl font-bold text-slate-900">OpsFlow</h2>
-            <p className="text-sm text-slate-400">Operations platform</p>
-      </div>
+      <Link 
+        to = "/"
+        className="border-b border-slate-200 px-6 py-5">
+            <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-500/30">
+              ⚡
+            </div>
+          <span className="text-xl font-bold">OpsFlow</span>
+        </div>
+      </Link>
 
       <nav className="flex-1 space-y-2 px-4 py-6">
         <NavLink to="/dashboard" className={getNavClass}>
