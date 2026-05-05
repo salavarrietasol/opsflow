@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
+import {
+  ErrorState,
+  LoadingState,
+} from "../../../components/feedback/RequestState";
 import { getTicketById, updateTicket } from "../../../api/tickets";
 
 type Ticket = {
@@ -35,55 +39,62 @@ const EditTicketPage = () => {
   const [form, setForm] = useState<TicketForm>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [saveError, setSaveError] = useState("");
+
+  const loadTicket = useCallback(async () => {
+    if (!id) {
+      setLoadError("Invalid ticket ID.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setLoadError("");
+      const ticket: Ticket = await getTicketById(id);
+      setTicketId(ticket.id);
+      setForm({
+        title: ticket.title,
+        description: ticket.description,
+        status: ticket.status,
+        priority: ticket.priority,
+        assignee: ticket.assignee,
+        created: ticket.created,
+      });
+    } catch (error) {
+      console.error("Error loading ticket:", error);
+      setLoadError("Unable to load this ticket. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-    const loadTicket = async () => {
-      if (!id) return;
-
-      try {
-        setLoading(true);
-        const ticket: Ticket = await getTicketById(id);
-        setTicketId(ticket.id);
-        setForm({
-          title: ticket.title,
-          description: ticket.description,
-          status: ticket.status,
-          priority: ticket.priority,
-          assignee: ticket.assignee,
-          created: ticket.created,
-        });
-      } catch (error) {
-        console.error("Error loading ticket:", error);
-        setError("Unable to load this ticket.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadTicket();
-  }, [id]);
+  }, [loadTicket]);
 
   const updateField = (field: keyof TicketForm, value: string) => {
     setForm((currentForm) => ({
       ...currentForm,
       [field]: value,
     }));
+    setSaveError("");
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!id) return;
+    if (!id || saving) return;
 
     try {
       setSaving(true);
-      setError("");
+      setSaveError("");
       const updatedTicket: Ticket = await updateTicket(id, form);
       navigate(`/tickets/${updatedTicket.id}`);
     } catch (error) {
       console.error("Error updating ticket:", error);
-      setError("Unable to save the ticket changes.");
+      setSaveError("Unable to save the ticket changes. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -92,7 +103,15 @@ const EditTicketPage = () => {
   if (loading) {
     return (
       <MainLayout>
-        <p className="text-sm text-slate-500">Loading ticket...</p>
+        <LoadingState message="Loading ticket..." />
+      </MainLayout>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <MainLayout>
+        <ErrorState message={loadError} actionLabel="Retry" onAction={loadTicket} />
       </MainLayout>
     );
   }
@@ -106,7 +125,7 @@ const EditTicketPage = () => {
               to={ticketId ? `/tickets/${ticketId}` : "/tickets"}
               className="mb-3 inline-block text-sm font-medium text-violet-600 hover:underline"
             >
-              ← Back to Ticket
+              {"<-"} Back to Ticket
             </Link>
 
             <p className="text-sm text-slate-500">Edit Ticket</p>
@@ -118,7 +137,8 @@ const EditTicketPage = () => {
                 type="text"
                 value={form.title}
                 onChange={(event) => updateField("title", event.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-2xl font-bold text-slate-900 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+                disabled={saving}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-2xl font-bold text-slate-900 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-100"
                 placeholder="Ticket title"
                 required
               />
@@ -132,7 +152,8 @@ const EditTicketPage = () => {
             <select
               value={form.status}
               onChange={(event) => updateField("status", event.target.value)}
-              className="rounded-full border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-700 outline-none focus:border-orange-400"
+              disabled={saving}
+              className="rounded-full border border-orange-200 bg-orange-50 px-3 py-2 text-xs font-semibold text-orange-700 outline-none focus:border-orange-400 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {statusOptions.map((status) => (
                 <option key={status} value={status}>
@@ -143,7 +164,8 @@ const EditTicketPage = () => {
             <select
               value={form.priority}
               onChange={(event) => updateField("priority", event.target.value)}
-              className="rounded-full border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 outline-none focus:border-red-300"
+              disabled={saving}
+              className="rounded-full border border-red-100 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 outline-none focus:border-red-300 disabled:cursor-not-allowed disabled:opacity-70"
               required
             >
               <option value="">Priority</option>
@@ -156,9 +178,9 @@ const EditTicketPage = () => {
           </div>
         </header>
 
-        {error && (
+        {saveError && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
+            {saveError}
           </div>
         )}
 
@@ -170,8 +192,9 @@ const EditTicketPage = () => {
               <textarea
                 value={form.description}
                 onChange={(event) => updateField("description", event.target.value)}
+                disabled={saving}
                 rows={8}
-                className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-7 text-slate-600 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+                className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-7 text-slate-600 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 disabled:cursor-not-allowed disabled:bg-slate-100"
                 placeholder="Describe the issue, request, or workflow need..."
                 required
               />
@@ -184,7 +207,8 @@ const EditTicketPage = () => {
                   <select
                     value={form.assignee}
                     onChange={(event) => updateField("assignee", event.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500"
+                    disabled={saving}
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                     required
                   >
                     <option value="">Select assignee</option>
@@ -203,7 +227,8 @@ const EditTicketPage = () => {
                   <select
                     value={form.status}
                     onChange={(event) => updateField("status", event.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500"
+                    disabled={saving}
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                   >
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
@@ -220,7 +245,8 @@ const EditTicketPage = () => {
                   <select
                     value={form.priority}
                     onChange={(event) => updateField("priority", event.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500"
+                    disabled={saving}
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                     required
                   >
                     <option value="">Select priority</option>
@@ -240,7 +266,8 @@ const EditTicketPage = () => {
                     type="date"
                     value={form.created}
                     onChange={(event) => updateField("created", event.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500"
+                    disabled={saving}
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100"
                     required
                   />
                 </div>
@@ -279,8 +306,9 @@ const EditTicketPage = () => {
                 </button>
                 <button
                   type="button"
+                  disabled={saving}
                   onClick={() => navigate(ticketId ? `/tickets/${ticketId}` : "/tickets")}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>

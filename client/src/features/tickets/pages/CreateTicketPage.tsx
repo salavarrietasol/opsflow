@@ -1,271 +1,263 @@
-import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
 import { createTicket } from "../../../api/tickets";
+
+type TicketForm = {
+  title: string;
+  description: string;
+  priority: string;
+  assignee: string;
+  created: string;
+};
+
+type TicketFormErrors = Record<keyof TicketForm, string>;
+
+const emptyForm: TicketForm = {
+  title: "",
+  description: "",
+  priority: "",
+  assignee: "",
+  created: "",
+};
+
+const emptyErrors: TicketFormErrors = {
+  title: "",
+  description: "",
+  priority: "",
+  assignee: "",
+  created: "",
+};
+
+const priorityOptions = ["Urgent", "High", "Medium", "Low"];
+const assigneeOptions = ["Sarah Chen", "Marcus K.", "Alex Rivera", "Lila Thorne"];
+
 const CreateTicketPage = () => {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [priority, setPriority] = useState("");
-    const [assignee, setAssignee] = useState("");
-    const [created, setCreated] = useState("");
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+  const [form, setForm] = useState<TicketForm>(emptyForm);
+  const [errors, setErrors] = useState<TicketFormErrors>(emptyErrors);
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const navigate = useNavigate();
 
-    const [errors, setErrors] = useState({
-        title: "",
-        description: "",
-        priority: "",
-        assignee: "",
-        created: "",
-    });
+  const updateField = (field: keyof TicketForm, value: string) => {
+    setForm((currentForm) => ({
+      ...currentForm,
+      [field]: value,
+    }));
 
-    const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const newErrors = {
-        title: "",
-        description: "",
-        priority: "",
-        assignee: "",
-        created: "",
-      };
+    if (value.trim()) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        [field]: "",
+      }));
+    }
 
-      if (!title.trim()) {
-        newErrors.title = "Title is required";
-      }
+    setSubmitError("");
+  };
 
-      if (!description.trim()) {
-        newErrors.description = "Description is required";
-      }
+  const validateForm = () => {
+    const newErrors = { ...emptyErrors };
 
-      if (!priority.trim()) {
-        newErrors.priority = "Please select a priority";
-      }
+    if (!form.title.trim()) {
+      newErrors.title = "Title is required";
+    }
 
-      if (!assignee.trim()) {
-        newErrors.assignee = "Please select an assignee";
-      }
+    if (!form.description.trim()) {
+      newErrors.description = "Description is required";
+    }
 
-      if (!created.trim()) {
-        newErrors.created = "Due date is required";
-      }
+    if (!form.priority.trim()) {
+      newErrors.priority = "Please select a priority";
+    }
 
-      if (
-        newErrors.title ||
-        newErrors.description ||
-        newErrors.priority ||
-        newErrors.assignee ||
-        newErrors.created
-      ) {
-        setErrors(newErrors);
-        return;
-      }
+    if (!form.assignee.trim()) {
+      newErrors.assignee = "Please select an assignee";
+    }
 
-      setErrors(newErrors);
+    if (!form.created.trim()) {
+      newErrors.created = "Due date is required";
+    }
 
+    setErrors(newErrors);
+
+    return !Object.values(newErrors).some(Boolean);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (loading || !validateForm()) return;
+
+    try {
       setLoading(true);
+      setSubmitError("");
+      await createTicket({
+        ...form,
+        status: "OPEN",
+      });
 
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        await createTicket({
-          title,
-          description,
-          priority,
-          assignee,
-          created,
-        });
-
-        navigate("/tickets");
-      } catch (error) {
-        console.error("Error creating ticket", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      navigate("/tickets");
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      setSubmitError("Unable to create the ticket. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <MainLayout>
-          <header className="mb-8">
-            <div className="mb-3 flex items-center gap-2 text-sm text-slate-400">
-                <Link to="/tickets" className="hover:text-violet-600">
-                    Tickets
-                </Link>
-                <span>/</span>
-                <span className="text-slate-500">Create Ticket</span>
+      <header className="mb-8">
+        <div className="mb-3 flex items-center gap-2 text-sm text-slate-400">
+          <Link to="/tickets" className="hover:text-violet-600">
+            Tickets
+          </Link>
+          <span>/</span>
+          <span className="text-slate-500">Create Ticket</span>
+        </div>
+        <h1 className="text-3xl font-bold text-slate-900">Create Ticket</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Submit a new operational request and assign ownership.
+        </p>
+      </header>
+
+      <section className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {submitError && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
             </div>
-            <h1 className="text-3xl font-bold text-slate-900">Create Ticket</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Submit a new operational request and assign ownership.
-            </p>
-          </header>
+          )}
 
-          <section className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <form className="space-y-5" onSubmit={handleSubmit}>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Ticket title
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter a clear and concise title"
-                  value={title}
-                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
-                    errors.title ? "border-red-500" : "border-slate-200"
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setTitle(value);
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Ticket title
+            </label>
+            <input
+              type="text"
+              placeholder="Enter a clear and concise title"
+              value={form.title}
+              disabled={loading}
+              className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                errors.title ? "border-red-500" : "border-slate-200"
+              }`}
+              onChange={(event) => updateField("title", event.target.value)}
+            />
+            {errors.title && (
+              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+            )}
+          </div>
 
-                    if (value.trim()) {
-                      setErrors(prev => ({ ...prev, title: "" }));
-                    }
-                  }}
-                />
-                {errors.title && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.title}
-                  </p>
-                )}
-              </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Description
+            </label>
+            <textarea
+              rows={6}
+              placeholder="Describe the issue, request, or workflow need..."
+              value={form.description}
+              disabled={loading}
+              className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                errors.description ? "border-red-500" : "border-slate-200"
+              }`}
+              onChange={(event) => updateField("description", event.target.value)}
+            />
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+            )}
+          </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Description
-                </label>
-                <textarea
-                  rows={6}
-                  placeholder="Describe the issue, request, or workflow need..."
-                  value={description}
-                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
-                    errors.description ? "border-red-500" : "border-slate-200"
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setDescription(value);
+          <div className="grid gap-5 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Priority
+              </label>
+              <select
+                value={form.priority}
+                disabled={loading}
+                className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                  errors.priority ? "border-red-500" : "border-slate-200"
+                }`}
+                onChange={(event) => updateField("priority", event.target.value)}
+              >
+                <option value="">Select priority</option>
+                {priorityOptions.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
+              </select>
+              {errors.priority && (
+                <p className="mt-1 text-sm text-red-600">{errors.priority}</p>
+              )}
+            </div>
 
-                    if (value.trim()) {
-                      setErrors(prev => ({ ...prev, description: "" }));
-                    }
-                  }}
-                />
-                {errors.description && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.description}
-                  </p>
-                )}
-              </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Assignee
+              </label>
+              <select
+                value={form.assignee}
+                disabled={loading}
+                className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                  errors.assignee ? "border-red-500" : "border-slate-200"
+                }`}
+                onChange={(event) => updateField("assignee", event.target.value)}
+              >
+                <option value="">Select assignee</option>
+                {assigneeOptions.map((assignee) => (
+                  <option key={assignee} value={assignee}>
+                    {assignee}
+                  </option>
+                ))}
+              </select>
+              {errors.assignee && (
+                <p className="mt-1 text-sm text-red-600">{errors.assignee}</p>
+              )}
+            </div>
+          </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Priority
-                  </label>
-                  <select 
-                    value = {priority}
-                    className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 ${
-                      errors.priority ? "border-red-500" : "border-slate-200"
-                    }`}
-                    onChange={(e) => {
-                    const value = e.target.value;
-                    setPriority(value);
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Due date
+            </label>
+            <input
+              type="date"
+              value={form.created}
+              disabled={loading}
+              className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+                errors.created ? "border-red-500" : "border-slate-200"
+              }`}
+              onChange={(event) => updateField("created", event.target.value)}
+            />
+            {errors.created && (
+              <p className="mt-1 text-sm text-red-600">{errors.created}</p>
+            )}
+          </div>
 
-                    if (value.trim()) {
-                      setErrors(prev => ({ ...prev, priority: "" }));
-                    }
-                  }}
-                    >
-                    <option value="">Select priority</option>
-                    <option>Urgent</option>
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Low</option>
-                  </select>
-                  {errors.priority && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.priority}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Assignee
-                  </label>
-                  <select 
-                    value={assignee}
-                    className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-600 outline-none focus:border-violet-500 ${
-                      errors.assignee ? "border-red-500" : "border-slate-200"
-                    }`}
-                    onChange={(e) => {
-                    const value = e.target.value;
-                    setAssignee(value);
-
-                    if (value.trim()) {
-                      setErrors(prev => ({ ...prev, assignee: "" }));
-                    }
-                  }}
-                    >
-                    <option value="">Select assignee</option>
-                    <option>Sarah Chen</option>
-                    <option>Marcus K.</option>
-                    <option>Alex Rivera</option>
-                    <option>Lila Thorne</option>
-                  </select>
-                  {errors.assignee && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.assignee}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Due date
-                </label>
-                <input
-                  type="date"
-                  value={created}
-                  className={`w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 ${
-                    errors.created ? "border-red-500" : "border-slate-200"
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setCreated(value);
-
-                    if (value.trim()) {
-                      setErrors(prev => ({ ...prev, created: "" }));
-                    }
-                  }}
-                />
-                {errors.created && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.created}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => navigate("/tickets")}
-                  className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`rounded-xl px-5 py-3 text-sm font-semibold text-white shadow transition ${
-                    loading
-                      ? "bg-violet-300 cursor-not-allowed"
-                      : "bg-violet-600 hover:bg-violet-700 cursor-pointer"
-                  }`}
-                  >
-                  {loading ? "Creating..." : "Create Ticket"}
-                </button>
-              </div>
-            </form>
-          </section>
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => navigate("/tickets")}
+              className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`rounded-xl px-5 py-3 text-sm font-semibold text-white shadow transition ${
+                loading
+                  ? "cursor-not-allowed bg-violet-300"
+                  : "cursor-pointer bg-violet-600 hover:bg-violet-700"
+              }`}
+            >
+              {loading ? "Creating..." : "Create Ticket"}
+            </button>
+          </div>
+        </form>
+      </section>
     </MainLayout>
   );
 };

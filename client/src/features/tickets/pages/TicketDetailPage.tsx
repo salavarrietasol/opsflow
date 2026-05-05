@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../../../components/layout/MainLayout";
-import { getTicketById } from "../../../api/tickets";
-import { deleteTicket } from "../../../api/tickets";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingState,
+} from "../../../components/feedback/RequestState";
+import { deleteTicket, getTicketById } from "../../../api/tickets";
 
 type Ticket = {
   id: string;
@@ -16,63 +20,122 @@ type Ticket = {
 
 const TicketDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const navigate = useNavigate();
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const handleDelete = async () => {
-  if (!ticket) return;
+  const loadTicket = useCallback(async () => {
+    if (!id) {
+      setTicket(null);
+      setError("Invalid ticket ID.");
+      setLoading(false);
+      return;
+    }
 
-  const isMatch =
-    deleteConfirmation.trim().toLowerCase() === ticket.id.trim().toLowerCase();
-
-  if (!isMatch) return;
-
-  try {
-    console.log("Deleting ticket ID:", ticket.id);
-
-    await deleteTicket(ticket.id);
-
-    console.log("Ticket deleted successfully");
-
-    navigate("/tickets");
-  } catch (error) {
-    console.error("Error deleting ticket", error);
-  }
-};
-
-  useEffect(() => {
-    const loadTicket = async () => {
-      if (!id) return;
-
-      try {
-        const data = await getTicketById(id);
-        setTicket(data);
-      } catch (error) {
-        console.error("Error loading ticket:", error);
-      }
-    };
-
-    loadTicket();
+    try {
+      setLoading(true);
+      setError("");
+      const data: Ticket = await getTicketById(id);
+      setTicket(data);
+    } catch (error) {
+      console.error("Error loading ticket:", error);
+      setTicket(null);
+      setError("Unable to load this ticket. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  if (!ticket) {
+  useEffect(() => {
+    loadTicket();
+  }, [loadTicket]);
+
+  const handleDelete = async () => {
+    if (!ticket || deleteLoading) return;
+
+    const isMatch =
+      deleteConfirmation.trim().toLowerCase() === ticket.id.trim().toLowerCase();
+
+    if (!isMatch) return;
+
+    try {
+      setDeleteLoading(true);
+      setDeleteError("");
+      await deleteTicket(ticket.id);
+      navigate("/tickets");
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      setDeleteError("Unable to delete this ticket. Please try again.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCopyTicketId = async () => {
+    if (!ticket) return;
+
+    try {
+      await navigator.clipboard.writeText(ticket.id);
+      setCopied(true);
+    } catch (error) {
+      console.error("Error copying ticket ID:", error);
+      setDeleteError("Unable to copy the ticket ID.");
+    }
+  };
+
+  const closeDeleteModal = () => {
+    if (deleteLoading) return;
+
+    setShowDeleteModal(false);
+    setDeleteConfirmation("");
+    setDeleteError("");
+    setCopied(false);
+  };
+
+  const deleteIsConfirmed =
+    ticket !== null &&
+    deleteConfirmation.trim().toLowerCase() === ticket.id.trim().toLowerCase();
+
+  if (loading) {
     return (
       <MainLayout>
-        <p className="text-sm text-slate-500">Loading ticket...</p>
+        <LoadingState message="Loading ticket..." />
       </MainLayout>
     );
   }
 
-  const handleCopyTicketId = async () => {
-  if (!ticket) return;
+  if (error) {
+    return (
+      <MainLayout>
+        <ErrorState message={error} actionLabel="Retry" onAction={loadTicket} />
+      </MainLayout>
+    );
+  }
 
-  await navigator.clipboard.writeText(ticket.id);
-  setCopied(true);
-
-};
+  if (!ticket) {
+    return (
+      <MainLayout>
+        <EmptyState
+          title="Ticket not found"
+          description="This ticket does not exist or may have been removed."
+          action={
+            <Link
+              to="/tickets"
+              className="inline-flex rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700"
+            >
+              Back to Tickets
+            </Link>
+          }
+        />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -82,12 +145,12 @@ const TicketDetailPage = () => {
             to="/tickets"
             className="mb-3 inline-block text-sm font-medium text-violet-600 hover:underline"
           >
-            ← Back to Tickets
+            {"<-"} Back to Tickets
           </Link>
 
           <p className="text-sm text-slate-500">Ticket Details</p>
           <h1 className="text-3xl font-bold text-slate-900">
-            {ticket.id} · {ticket.title}
+            {ticket.id} - {ticket.title}
           </h1>
           <p className="mt-2 text-sm text-slate-500">
             Review current ticket information, ownership, and discussion history.
@@ -170,20 +233,24 @@ const TicketDetailPage = () => {
             <h2 className="text-lg font-semibold text-slate-900">Actions</h2>
 
             <div className="mt-4 space-y-3">
-              <button className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700"
+              <button
+                className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow hover:bg-violet-700"
                 type="button"
-                onClick={()=>navigate(`/tickets/${ticket.id}/edit`) }
+                onClick={() => navigate(`/tickets/${ticket.id}/edit`)}
               >
-              Update Ticket
+                Update Ticket
               </button>
               <button className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50">
                 Reassign Ticket
               </button>
               <button
                 type="button"
-                onClick={() => setShowDeleteModal(true)}
+                onClick={() => {
+                  setShowDeleteModal(true);
+                  setDeleteError("");
+                }}
                 className="w-full rounded-xl border border-slate-200 bg-red-600 px-4 py-3 text-sm font-medium text-white hover:bg-red-700"
-                >
+              >
                 Delete Ticket
               </button>
             </div>
@@ -199,7 +266,8 @@ const TicketDetailPage = () => {
             </div>
           </div>
         </aside>
-        {showDeleteModal && ticket && (
+
+        {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
               <h2 className="text-lg font-bold text-slate-900">
@@ -218,46 +286,52 @@ const TicketDetailPage = () => {
                 <button
                   type="button"
                   onClick={handleCopyTicketId}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-                  >
-                  <span>{copied ? "✅" : "📋"}</span>
+                  disabled={deleteLoading}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                >
                   {copied ? "Copied" : "Copy"}
                 </button>
               </div>
 
+              {deleteError && (
+                <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {deleteError}
+                </p>
+              )}
+
               <input
                 type="text"
                 value={deleteConfirmation}
-                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                onChange={(event) => {
+                  setDeleteConfirmation(event.target.value);
+                  setDeleteError("");
+                }}
+                disabled={deleteLoading}
                 placeholder="Type the ticket ID"
-                className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-red-500"
+                className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-red-500 disabled:cursor-not-allowed disabled:bg-slate-100"
               />
 
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setDeleteConfirmation("");
-                  }}
-                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                  onClick={closeDeleteModal}
+                  disabled={deleteLoading}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="button"
-                  disabled={
-                  deleteConfirmation.trim().toLowerCase() !== ticket.id.trim().toLowerCase()
-                }
+                  disabled={!deleteIsConfirmed || deleteLoading}
                   onClick={handleDelete}
                   className={`rounded-xl px-4 py-2 text-sm font-semibold text-white ${
-                    deleteConfirmation.trim().toLowerCase() !== ticket.id.trim().toLowerCase()
-                    ? "cursor-not-allowed bg-red-300"
-                    : "cursor-pointer bg-red-600 hover:bg-red-700"
+                    !deleteIsConfirmed || deleteLoading
+                      ? "cursor-not-allowed bg-red-300"
+                      : "cursor-pointer bg-red-600 hover:bg-red-700"
                   }`}
                 >
-                  Delete ticket
+                  {deleteLoading ? "Deleting..." : "Delete ticket"}
                 </button>
               </div>
             </div>
