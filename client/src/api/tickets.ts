@@ -9,6 +9,7 @@ export type TicketPayload = {
   priority: string;
   assignee: string;
   created: string;
+  attachments?: File[];
 };
 
 export const getTickets = async () => {

@@ -8,9 +8,11 @@ type MainLayoutProps = {
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-100">
-      <div className="flex">
+      <div className="min-h-screen lg:flex">
         <AppSidebar />
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:p-8">
+          {children}
+        </main>
       </div>
     </div>
   );

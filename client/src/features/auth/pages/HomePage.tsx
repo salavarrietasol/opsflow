@@ -4,7 +4,7 @@ import SplineScene from "./SplineScene";
 const HomePage = () => {
   return (
     <div className="min-h-screen overflow-hidden bg-[#070817] text-white">
-      <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-16">
+      <header className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-16">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 shadow-lg shadow-violet-500/30">
             ⚡
@@ -25,7 +25,7 @@ const HomePage = () => {
         </button>
       </header>
 
-      <main className="relative mx-auto grid min-h-[calc(100vh-210px)] max-w-7xl grid-cols-1 items-center justify-items-center gap-10 px-6 py-8 lg:grid-cols-2 lg:px-16">
+      <main className="relative mx-auto grid min-h-[calc(100vh-120px)] max-w-7xl grid-cols-1 items-center justify-items-center gap-8 px-4 py-6 sm:px-6 lg:min-h-[calc(100vh-210px)] lg:grid-cols-2 lg:gap-10 lg:px-16 lg:py-8">
         <div className="absolute left-1/2 top-20 h-72 w-72 -translate-x-[85%] rounded-full bg-violet-600/20 blur-3xl" />
         <div className="absolute bottom-10 left-1/2 h-72 w-72 -translate-x-[15%] rounded-full bg-fuchsia-600/20 blur-3xl" />
 
@@ -34,19 +34,19 @@ const HomePage = () => {
             Featured Project
           </span>
 
-          <h1 className="mt-8 max-w-2xl text-5xl font-extrabold leading-tight md:text-6xl">
+          <h1 className="mt-6 max-w-2xl text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl lg:mt-8">
             Ticket Management{" "}
             <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
               Platform
             </span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-base leading-8 text-slate-300 md:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
             A web platform to create, assign, prioritize and track support
             tickets from one operational workspace.
           </p>
 
-          <div className="mt-8 grid max-w-md gap-4 text-left">
+          <div className="mt-7 grid max-w-md gap-3 text-left sm:gap-4 lg:mt-8">
             {[
               "Create and manage tickets",
               "Assign agents and priorities",
@@ -98,7 +98,6 @@ const HomePage = () => {
     </div>
   );
 };
-
 
 
 const FooterItem = ({ title, text }: { title: string; text: string }) => {

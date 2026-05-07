@@ -55,26 +55,28 @@ const DashboardPage = () => {
 
   return (
     <MainLayout>
-      <header className="mb-8 flex items-center justify-between gap-4">
-        <div>
+      <header className="mb-6 flex flex-col gap-4 sm:mb-8 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
           <p className="text-sm text-slate-500">Dashboard</p>
-          <h1 className="text-3xl font-bold text-slate-900">System Overview</h1>
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            System Overview
+          </h1>
           <p className="mt-1 text-sm text-slate-500">
             Real-time operational health and performance metrics.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="grid gap-3 sm:grid-cols-2 md:flex md:items-center">
           <Link
             to="/tickets"
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50"
+            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-center text-sm font-medium text-slate-600 shadow-sm transition hover:bg-slate-50"
           >
             View Tickets
           </Link>
 
           <Link
             to="/tickets/create"
-            className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
+            className="rounded-xl bg-violet-600 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700"
           >
             Create Ticket
           </Link>
@@ -96,14 +98,14 @@ const DashboardPage = () => {
 
       {!loading && !error && metrics.length > 0 && (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {metrics.map((metric) => (
               <div
                 key={metric.title}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-5"
               >
                 <p className="text-sm text-slate-500">{metric.title}</p>
-                <h3 className="mt-3 text-3xl font-bold text-slate-900">
+                <h3 className="mt-3 text-2xl font-bold text-slate-900 sm:text-3xl">
                   {metric.value}
                 </h3>
                 <p className="mt-2 text-sm text-violet-600">{metric.change}</p>
@@ -111,8 +113,8 @@ const DashboardPage = () => {
             ))}
           </section>
 
-          <section className="mt-6 grid gap-6 xl:grid-cols-3">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
+          <section className="mt-5 grid gap-5 lg:mt-6 lg:gap-6 xl:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6 xl:col-span-2">
               <div className="mb-4">
                 <h2 className="text-lg font-semibold text-slate-900">
                   Tickets Trend
@@ -122,11 +124,11 @@ const DashboardPage = () => {
                 </p>
               </div>
 
-              <div className="flex h-72 items-end justify-between gap-3 rounded-xl bg-slate-50 p-6">
+              <div className="flex h-56 items-end justify-between gap-2 overflow-x-auto rounded-xl bg-slate-50 p-4 sm:h-72 sm:gap-3 sm:p-6">
                 {ticketTrend.map((height, index) => (
                   <div
                     key={weekDays[index]}
-                    className="flex flex-1 flex-col items-center gap-3"
+                    className="flex min-w-9 flex-1 flex-col items-center gap-3"
                   >
                     <div
                       className="w-full max-w-[42px] rounded-t-xl bg-violet-500/80"
@@ -140,8 +142,8 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
+            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
+              <div className="mb-4 flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold text-slate-900">
                   Recent Activity
                 </h2>

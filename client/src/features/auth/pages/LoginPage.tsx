@@ -4,8 +4,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001
 
 const LoginPage = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#070817] px-4 py-8">
-      <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/95 p-8 text-slate-900 shadow-2xl shadow-violet-950/40 backdrop-blur">
+    <div className="flex min-h-screen items-center justify-center bg-[#070817] px-4 py-6 sm:py-8">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/95 p-5 text-slate-900 shadow-2xl shadow-violet-950/40 backdrop-blur sm:p-8">
         <Link
           to="/"
           className="mb-6 inline-block text-sm font-bold text-violet-600 hover:text-violet-700"
@@ -18,7 +18,9 @@ const LoginPage = () => {
             ⚡
           </div>
 
-          <h1 className="text-4xl font-extrabold text-slate-950">OpsFlow</h1>
+          <h1 className="text-3xl font-extrabold text-slate-950 sm:text-4xl">
+            OpsFlow
+          </h1>
 
           <p className="mt-3 text-sm font-semibold text-slate-500">
             Welcome back

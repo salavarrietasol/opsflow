@@ -37,6 +37,7 @@ const CreateTicketPage = () => {
   const [errors, setErrors] = useState<TicketFormErrors>(emptyErrors);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const navigate = useNavigate();
 
   const updateField = (field: keyof TicketForm, value: string) => {
@@ -53,6 +54,11 @@ const CreateTicketPage = () => {
     }
 
     setSubmitError("");
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(event.target.files || []);
+    setFiles(selectedFiles);
   };
 
   const validateForm = () => {
@@ -107,7 +113,7 @@ const CreateTicketPage = () => {
 
   return (
     <MainLayout>
-      <header className="mb-8">
+      <header className="mb-6 sm:mb-8">
         <div className="mb-3 flex items-center gap-2 text-sm text-slate-400">
           <Link to="/tickets" className="hover:text-violet-600">
             Tickets
@@ -115,13 +121,15 @@ const CreateTicketPage = () => {
           <span>/</span>
           <span className="text-slate-500">Create Ticket</span>
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Create Ticket</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+          Create Ticket
+        </h1>
         <p className="mt-1 text-sm text-slate-500">
           Submit a new operational request and assign ownership.
         </p>
       </header>
 
-      <section className="max-w-3xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="w-full max-w-3xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-2xl sm:p-6">
         <form className="space-y-5" onSubmit={handleSubmit}>
           {submitError && (
             <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -167,7 +175,7 @@ const CreateTicketPage = () => {
             )}
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Priority
@@ -235,19 +243,45 @@ const CreateTicketPage = () => {
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-700">
+              Attachments
+            </label>
+            <input
+              type="file"
+              multiple
+              disabled={loading}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 disabled:cursor-not-allowed disabled:bg-slate-100 file:mr-4 file:rounded-lg file:border-0 file:bg-violet-600 file:px-3 file:py-1 file:text-sm file:text-white file:hover:bg-violet-700"
+              onChange={handleFileChange}
+            />
+            {files.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm text-slate-600 mb-2">Selected files:</p>
+                <ul className="space-y-1">
+                  {files.map((file, index) => (
+                    <li key={index} className="text-sm text-slate-500 flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-violet-600 rounded-full"></span>
+                      {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               disabled={loading}
               onClick={() => navigate("/tickets")}
-              className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`rounded-xl px-5 py-3 text-sm font-semibold text-white shadow transition ${
+              className={`rounded-xl px-5 py-3 text-sm font-semibold text-white shadow transition sm:w-auto ${
                 loading
                   ? "cursor-not-allowed bg-violet-300"
                   : "cursor-pointer bg-violet-600 hover:bg-violet-700"
